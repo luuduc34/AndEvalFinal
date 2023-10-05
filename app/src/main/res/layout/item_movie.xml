@@ -36,12 +36,15 @@
 
     <TextView
         android:id="@+id/rateTextView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:textSize="18dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:textSize="20dp"
+        android:text="10"
+        android:gravity="center"
         android:textStyle="bold"
         android:layout_marginRight="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/circle"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

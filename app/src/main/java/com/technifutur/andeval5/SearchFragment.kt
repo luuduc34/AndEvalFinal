@@ -1,59 +1,80 @@
 package com.technifutur.andeval5
 
+import MovieAdapter
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.technifutur.andeval5.databinding.FragmentSearchBinding
+import com.technifutur.andeval5.model.Movie
+import com.technifutur.andeval5.service.MovieServiceImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentSearchBinding
 
+    // api key
+    private val apiKey = "55530312075972a425f5fa13e21b218f"
+    private val movieService by lazy { MovieServiceImpl() }
+
+    // liste pour contenir les données de l'api
+    private var movieList: MutableList<Movie> = mutableListOf()
+
+    // image url
+    private var imageUrl: String = ""
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var movieAdapter: MovieAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        binding = FragmentSearchBinding.inflate(layoutInflater)
+
+        // Initialisation de la RecyclerView et de l'adaptateur
+        recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+        movieAdapter = MovieAdapter(movieList)
+        recyclerView.adapter = movieAdapter
+
+        // lier le bouton à la méthode search
+        binding.searchBtn.setOnClickListener {
+            val movieName = binding.searchEdittext.text.toString()
+            getMoviesAsync(movieName)
+        }
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun getMoviesAsync(name: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = movieService.getMovies(name, apiKey)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val movies = response.body()?.results
+                        movies?.let {
+                            movieList.clear()
+                            movieList.addAll(it)
+                            movieAdapter.notifyDataSetChanged() // Mettez à jour l'adaptateur
+                        }
+                    } else {
+                        // Gérez les erreurs ici, par exemple, affichez un message d'erreur à l'utilisateur
+                        Log.e("Error", "La requête a échoué.")
+                    }
                 }
+            } catch (e: Exception) {
+                // Gérez les exceptions ici, par exemple, affichez un message d'erreur à l'utilisateur
+                Log.e("Error", "Une erreur s'est produite : ${e.message}")
             }
+        }
     }
+
 }

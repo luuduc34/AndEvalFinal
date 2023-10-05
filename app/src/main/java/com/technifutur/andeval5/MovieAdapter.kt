@@ -37,20 +37,19 @@ class MovieAdapter(private val movieList: MutableList<Movie>) : RecyclerView.Ada
         val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
         val rateTextView: TextView = itemView.findViewById(R.id.rateTextView)
-        val movieImageView: ImageView = itemView.findViewById(R.id.movieImage) // Ajoutez ImageView
+        val movieImageView: ImageView = itemView.findViewById(R.id.movieImage)
     }
 
     private fun setupImage(url: String?, imageView: ImageView) {
         if (!url.isNullOrEmpty()) {
             Picasso.get()
-                .load("https://image.tmdb.org/t/p/w500$url") // Utilisez l'URL complet pour l'image
+                .load("https://image.tmdb.org/t/p/w500$url")
                 .fit()
                 .centerCrop()
                 .into(imageView)
         } else {
-            // Chargez une image par défaut si l'URL est vide ou null
             Picasso.get()
-                .load(R.drawable.search) // Remplacez avec l'image par défaut de votre choix
+                .load("https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/660px-No-Image-Placeholder.svg.png?20200912122019")
                 .fit()
                 .centerCrop()
                 .into(imageView)

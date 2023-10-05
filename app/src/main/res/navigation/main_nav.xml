@@ -15,4 +15,9 @@
         android:name="com.technifutur.andeval5.TrendingFragment"
         android:label="fragment_trending"
         tools:layout="@layout/fragment_trending" />
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.technifutur.andeval5.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail" />
 </navigation>
